@@ -1,15 +1,17 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import {authService} from '../services/auth' // Asegúrate de que la ruta sea correcta
 import { getUser } from '../services/api'; // Asegúrate de que la ruta sea correcta
 import { useUser } from '../context/UserContext'; // Asegúrate de que la ruta sea correcta
 
 
-function LoginForm( { onLoginSuccess } ) {
+function LoginForm( { onLoginSuccess, onClose } ) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
   const { setUser } = useUser() // Usamos el contexto para manejar el usuario
+  const navigate = useNavigate() // Asegúrate de importar useNavigate desde 'react-router-dom'
 
   const handleSubmit =  async (e) => {
     e.preventDefault()
@@ -69,10 +71,18 @@ function LoginForm( { onLoginSuccess } ) {
         Acceder
       </button>
       <div className="text-center">
-        <a href="#" className="text-blue-600 hover:underline text-sm">
+        <button
+          type="button"
+          className="text-blue-600 hover:underline text-sm bg-transparent border-none p-0"
+          onClick={() => {
+            if (onClose) onClose(); // Cierra el modal
+            navigate('/register');  // Navega a la página de registro
+          }}
+        >
           ¿No tienes cuenta? Regístrate
-        </a>
+        </button>
       </div>
+        
     </form>
   )
 }
