@@ -49,6 +49,7 @@ api.interceptors.response.use(
     }
 );
 
+// Función para obtener los datos del usuario autenticado
 export const getUser = async () => {
     const response = await api.get('/users/');
     return response.data;

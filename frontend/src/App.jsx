@@ -5,13 +5,24 @@ import djangoLogo from './assets/django_rest.svg'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import LoginForm from './components/LoginForm'
+import { authService } from './services/auth' // Asegúrate de que la ruta sea correcta
+import { useUser } from './context/UserContext' // Asegúrate de que la ruta sea correcta
+
 
 function App() {
   const [showLogin, setShowLogin] = useState(false)
+  const { setUser } = useUser() // Usamos el contexto para manejar el usuario
+
+  const handleLogout = () => {
+    authService.logout()
+    setUser(null) // Limpiamos el usuario en el contexto
+    setShowLogin(false)   
+
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header onLoginClick={() => setShowLogin(true)} />
+      <Header onLoginClick={() => setShowLogin(true)} onLogout={handleLogout} />
       <main className="flex-1 flex items-center justify-center flex-col">
         <div className="flex items-center justify-between mb-4 gap-11">
           <a href="https://vitejs.dev" target="_blank"> 

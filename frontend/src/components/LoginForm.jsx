@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import {authService} from '../services/auth' // Asegúrate de que la ruta sea correcta
 import { getUser } from '../services/api'; // Asegúrate de que la ruta sea correcta
+import { useUser } from '../context/UserContext'; // Asegúrate de que la ruta sea correcta
+
 
 function LoginForm( { onLoginSuccess } ) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
+  const { setUser } = useUser() // Usamos el contexto para manejar el usuario
 
   const handleSubmit =  async (e) => {
     e.preventDefault()
@@ -16,7 +19,7 @@ function LoginForm( { onLoginSuccess } ) {
         await authService.login(username, password)
         const userData = await getUser()
         localStorage.setItem('user_data', JSON.stringify(userData))
-        console.log('Inicio de sesión exitoso:', userData)
+        setUser(userData) // Actualizamos el contexto con los datos del usuario
         setSuccess(true)
         // Redirigir o mostrar un mensaje de éxito
         onLoginSuccess()
