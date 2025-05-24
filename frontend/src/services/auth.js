@@ -4,6 +4,7 @@ const TOKEN_KEY = 'access_token';
 const REFRESH_KEY = 'refresh_token';
 const USER_KEY = 'user_data';
 
+
 export const authService = {
     login: async (username, password) => {
         try {
@@ -16,7 +17,6 @@ export const authService = {
     
             localStorage.setItem(TOKEN_KEY, access);
             localStorage.setItem(REFRESH_KEY, refresh);
-            localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
             return access;
         } catch (error) {
             console.error('Error durante el inicio de sesión:', error);
@@ -26,6 +26,8 @@ export const authService = {
 
     logout: () => {
         localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(REFRESH_KEY);
+        localStorage.removeItem(USER_KEY);
     },
 
     register: async (username, email, password) => {
@@ -69,8 +71,5 @@ export const authService = {
         }
     },
 
-    getCurrentUser: () => {
-        const userData = localStorage.getItem(USER_KEY);
-        return userData ? JSON.parse(userData) : null;
-    },
+    
 };

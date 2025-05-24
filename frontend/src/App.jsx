@@ -44,7 +44,7 @@ function App() {
             >
               &times;
             </button>
-            <LoginForm />
+            <LoginForm onLoginSuccess={() => setShowLogin(false)} />
           </div>
         </div>
       )}

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken } from './auth';
+import { authService} from './auth';
 
 const API_URL = '/api/';
 
@@ -13,7 +13,7 @@ const api = axios.create({
 // Interceptor para añadir el token JWT a cada petición
 api.interceptors.request.use(
     (config) => {
-        const token = getToken();
+        const token = authService.getToken();
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -48,5 +48,10 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
+export const getUser = async () => {
+    const response = await api.get('/users/');
+    return response.data;
+};
 
 export default api;
