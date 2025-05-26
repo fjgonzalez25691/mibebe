@@ -9,15 +9,18 @@ import LoginForm from './components/LoginForm'
 import { authService } from './services/auth' 
 import { useUser } from './context/UserContext' 
 import RegisterForm from './components/RegisterForm'
+import { useNavigate } from 'react-router-dom'
 
 function App() {
   const [showLogin, setShowLogin] = useState(false)
   const { setUser } = useUser() // Usamos el contexto para manejar el usuario
+  const navigate = useNavigate()
 
   const handleLogout = () => {
     authService.logout()
     setUser(null) // Limpiamos el usuario en el contexto
-    setShowLogin(false)   
+    setShowLogin(false);
+    navigate('/');
 
   }
 
@@ -65,7 +68,10 @@ function App() {
               &times;
             </button>
             <LoginForm 
-              onLoginSuccess={() => setShowLogin(false)}
+              onLoginSuccess={() => {
+                setShowLogin(false);
+                navigate('/');
+              }}
               onClose={() => setShowLogin(false)}
             />
           </div>

@@ -1,4 +1,6 @@
+import { Navigate } from 'react-router-dom';
 import api from './api';
+import { getUser } from './api'; // Asegúrate de que la ruta sea correcta   
 
 const TOKEN_KEY = 'access_token';
 const REFRESH_KEY = 'refresh_token';
@@ -30,12 +32,10 @@ export const authService = {
         localStorage.removeItem(USER_KEY);
     },
 
-    register: async (username, email, password) => {
+    register: async (userData) => {
         try {
             const response = await api.post('users/register/', {
-                username,
-                email,
-                password,
+                ...userData
             });
             return response.data;
         } catch (error) {
@@ -54,6 +54,10 @@ export const authService = {
 
     isAuthenticated: () => {
         return !!localStorage.getItem(TOKEN_KEY);
+    },
+
+    getCurrentUser: async () => {
+        return await getUser();
     },
 
     refreshToken: async () => {

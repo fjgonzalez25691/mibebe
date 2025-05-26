@@ -1,5 +1,9 @@
+import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/auth'; // Asegúrate de tener un servicio de registro
+import { getUser } from '../services/api'; // Asegúrate de que la ruta sea correcta
+import { useUser } from '../context/UserContext'; // Asegúrate de que la ruta sea correcta
 
 function RegisterForm() {
     const [form, setForm] = useState({
@@ -12,6 +16,7 @@ function RegisterForm() {
         confirm_password: ''
     });
     const [error, setError] = useState(null);
+    const setUser = useUser(); // Usamos el contexto para manejar el usuario
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -34,13 +39,24 @@ function RegisterForm() {
             return;
         }
         try {
-            // Aquí deberías llamar a tu servicio de registro
-            // await authService.register(form.username, form.email, form.password);
-            console.log('Registro exitoso:', form);
-            // Redirigir o mostrar un mensaje de éxito
+            await authService.register({
+                username: form.username,
+                email: form.email,  
+                first_name: form.first_name,
+                last_name: form.last_name,
+                phone: form.phone,
+                password: form.password
+            });
+            // Login automático después del registro
+            await authService.login(form.username, form.password);
+            // Redirigir al usuario a la página principal o donde desees
+            const userData = await getUser();
+            localStorage.setItem('user_data', JSON.stringify(userData));
+            setUser(userData); // Actualiza el contexto o estado global con los datos del usuario
+            navigate('/'); // Redirige al usuario a la página principal
         } catch (error) {
             setError('Error al registrar el usuario. Por favor, inténtalo de nuevo.');
-            console.error('Error durante el registro:', error);
+            
         }
     }
 
@@ -50,7 +66,7 @@ function RegisterForm() {
             {error && <div className="text-red-600 text-center">{error}</div>}
             <div>
                 <label className="block text-gray-700 mb-1" htmlFor="username">
-                    Nombre de usuario <span className="text-red-600">*</span>
+                    Usuario <span className="text-red-600">*</span>
                 </label>
                 <input
                     id="username"
@@ -59,7 +75,7 @@ function RegisterForm() {
                     value={form.username}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Introduce tu nombre de usuario"
+                    placeholder="Introduce tu usuario"
                     required
                 />
             </div>
@@ -128,6 +144,7 @@ function RegisterForm() {
                 </label>
                 <input
                     id="password"
+                    data-testid="password"
                     type="password"
                     autoComplete="new-password"
                     value={form.password}
@@ -144,6 +161,7 @@ function RegisterForm() {
                 <input
                     id="confirm_password"
                     type="password"
+                    data-testid="confirm"
                     autoComplete="new-password"
                     value={form.confirm_password}
                     onChange={handleChange}
