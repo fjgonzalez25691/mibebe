@@ -8,7 +8,7 @@ function Header({onLoginClick, onLogout}) {
 
   return (
     <header className="flex justify-between items-center px-8 py-4 bg-white shadow">
-      <span className="text-4xl font-bold text-blue-600">Mi Bebé</span>
+      <span className="text-4xl font-bold text-blue-600">Mi App</span>
       {user ? (
         <div className="flex items-center gap-4">
           <div className="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">
