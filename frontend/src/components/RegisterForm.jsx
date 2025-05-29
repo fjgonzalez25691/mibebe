@@ -76,7 +76,6 @@ function RegisterForm() {
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Introduce tu usuario"
-                    required
                 />
             </div>
             <div>
@@ -91,7 +90,6 @@ function RegisterForm() {
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Introduce tu email"
-                    required
                 />
             </div>
             <div>
@@ -106,7 +104,6 @@ function RegisterForm() {
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Introduce tu nombre"
-                    required
                 />
             </div>
             <div>
@@ -121,7 +118,6 @@ function RegisterForm() {
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Introduce tus apellidos"
-                    required
                 />
             </div>
             <div>
@@ -151,7 +147,6 @@ function RegisterForm() {
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Introduce tu contraseña"
-                    required
                 />
             </div>
             <div>
@@ -167,7 +162,6 @@ function RegisterForm() {
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Repite tu contraseña"
-                    required
                 />
             </div>
             <div className="text-sm text-gray-500 mb-2">

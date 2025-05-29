@@ -1,17 +1,13 @@
 import { useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import reactlogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import djangoLogo from './assets/django-logo-negative.svg'
-import django_rest_logo from './assets/django_rest.svg'
+import { Routes, Route, useNavigate } from 'react-router-dom'
+import { useUser } from './context/UserContext' 
+import { authService } from './services/auth'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import LoginForm from './components/LoginForm'
-import { authService } from './services/auth' 
-import { useUser } from './context/UserContext' 
 import RegisterForm from './components/RegisterForm'
 import HomePage from './pages/HomePage'
-import { useNavigate } from 'react-router-dom'
+
 
 function App() {
   const [showLogin, setShowLogin] = useState(false)
