@@ -1,23 +1,33 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth'; // Asegúrate de tener un servicio de registro
 import { getUser } from '../services/api'; // Asegúrate de que la ruta sea correcta
 import { useUser } from '../context/UserContext'; // Asegúrate de que la ruta sea correcta
 
+const fields = [
+  { name: 'username', label: 'Usuario', type: 'text', required: true },
+  { name: 'email', label: 'Email', type: 'email', required: true },
+  { name: 'first_name', label: 'Nombre', type: 'text', required: true },
+  { name: 'last_name', label: 'Apellidos', type: 'text', required: true },
+  { name: 'phone', label: 'Teléfono', type: 'text', required: false },
+  { name: 'password', label: 'Contraseña', type: 'password', required: true },
+  { name: 'confirm_password', label: 'Confirmar contraseña', type: 'password', required: true },
+];
+const requiredFields = fields.filter(f => f.required).map(f => f.name);
+
+
 function RegisterForm() {
-    const [form, setForm] = useState({
-        username: '',
-        email: '',
-        first_name: '',
-        last_name: '',
-        phone: '',
-        password: '',
-        confirm_password: ''
-    });
+    const [form, setForm] = useState(
+      Object.fromEntries(fields.map(f => [f.name, ''])),
+    );
     const [error, setError] = useState(null);
-    const setUser = useUser(); // Usamos el contexto para manejar el usuario
+    const { setUser } = useUser(); // Usamos el contexto para manejar el usuario
     const navigate = useNavigate();
+
+    const requiredRefs = useRef(
+         Object.fromEntries(fields.filter(f => f.required).map(f => [f.name, React.createRef()]))
+    );
 
     const handleChange = (e) => {
         setForm({...form, [e.target.id]: e.target.value });
@@ -26,11 +36,11 @@ function RegisterForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-        // Validación campos requeridos
-        const requiredFields = ['username', 'email', 'first_name', 'last_name', 'password', 'confirm_password'];
-        for (const field of requiredFields) {
-            if (!form[field]) {
-                setError(`El campo ${field} es requerido`);
+        // Validación de campos obligatorios
+        for (const field of fields.filter(f => f.required)) {
+            if (!form[field.name]) {
+                setError(`El campo "${field.label}" es obligatorio`);
+                requiredRefs.current[field.name].current.focus(); // Enfoca el campo requerido
                 return;
             }
         }
@@ -38,6 +48,15 @@ function RegisterForm() {
             setError('Las contraseñas no coinciden');
             return;
         }
+        // Verificación por consola de los datos del formulario
+        console.log('Datos del formulario:', {
+            username: form.username,
+            email: form.email,
+            first_name: form.first_name,
+            last_name: form.last_name,
+            phone: form.phone,
+            password: form.password
+        });
         try {
             await authService.register({
                 username: form.username,
@@ -65,104 +84,24 @@ function RegisterForm() {
             <h2 className="text-2xl font-bold text-center text-blue-600 mb-2">Registro de usuario</h2>
             {error && <div className="text-red-600 text-center">{error}</div>}
             <div>
-                <label className="block text-gray-700 mb-1" htmlFor="username">
-                    Usuario <span className="text-red-600">*</span>
-                </label>
-                <input
-                    id="username"
-                    type="text"
-                    autoComplete='username'
-                    value={form.username}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Introduce tu usuario"
-                />
-            </div>
-            <div>
-                <label className="block text-gray-700 mb-1" htmlFor="email">
-                    Email <span className="text-red-600">*</span>
-                </label>
-                <input
-                    id="email"
-                    type="email"
-                    autoComplete='email'
-                    value={form.email}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Introduce tu email"
-                />
-            </div>
-            <div>
-                <label className="block text-gray-700 mb-1" htmlFor="first_name">
-                    Nombre <span className="text-red-600">*</span>
-                </label>
-                <input
-                    id="first_name"
-                    type="text"
-                    autoComplete='given-name'
-                    value={form.first_name}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Introduce tu nombre"
-                />
-            </div>
-            <div>
-                <label className="block text-gray-700 mb-1" htmlFor="last_name">
-                    Apellidos <span className="text-red-600">*</span>
-                </label>
-                <input
-                    id="last_name"
-                    type="text"
-                    autoComplete='family-name'
-                    value={form.last_name}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Introduce tus apellidos"
-                />
-            </div>
-            <div>
-                <label className="block text-gray-700 mb-1" htmlFor="phone">
-                    Teléfono
-                </label>
-                <input
-                    id="phone"
-                    type="tel"
-                    autoComplete="tel"
-                    value={form.phone}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Introduce tu teléfono"
-                />
-            </div>
-            <div>
-                <label className="block text-gray-700 mb-1" htmlFor="password">
-                    Contraseña <span className="text-red-600">*</span>
-                </label>
-                <input
-                    id="password"
-                    data-testid="password"
-                    type="password"
-                    autoComplete="new-password"
-                    value={form.password}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Introduce tu contraseña"
-                />
-            </div>
-            <div>
-                <label className="block text-gray-700 mb-1" htmlFor="confirm_password">
-                    Confirmar contraseña <span className="text-red-600">*</span>
-                </label>
-                <input
-                    id="confirm_password"
-                    type="password"
-                    data-testid="confirm"
-                    autoComplete="new-password"
-                    value={form.confirm_password}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Repite tu contraseña"
-                />
+                {fields.map(field => (
+                    <div key={field.name}>
+                        <label className="block text-gray-700 mb-1" htmlFor={field.name}>
+                        {field.label} {field.required && <span className="text-red-600">*</span>}
+                        </label>
+                        <input
+                        id={field.name}
+                        type={field.type}
+                        value={form[field.name]}
+                        onChange={handleChange}
+                        ref={field.required ? requiredRefs.current[field.name] : null}
+                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder={`Introduce tu ${field.label.toLowerCase()}`}
+                        // Puedes añadir data-testid si lo necesitas para los tests
+                        data-testid={['password', 'confirm_password'].includes(field.name) ? field.name : undefined}
+                        />
+                    </div>
+                    ))}
             </div>
             <div className="text-sm text-gray-500 mb-2">
                 <span className="text-red-600">*</span> Campos obligatorios
