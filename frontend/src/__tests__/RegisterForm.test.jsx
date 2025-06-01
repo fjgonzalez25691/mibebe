@@ -13,18 +13,26 @@ vi.mock('../services/auth', () => ({
   },
 }))
 
+// Mock del contexto de usuario
+vi.mock('../context/UserContext', () => ({
+  useUser: () => ({
+    setUser: vi.fn(),
+  }),
+}))
+
 afterEach(() => {
   vi.clearAllMocks()
 })
 
 const requiredFields = [
-  { label: /Usuario */i, name: 'username', value: 'testuser' },
-  { label: /Email */i, name: 'email', value: 'testuser@example.com' },
-  { label: /Nombre */i, name: 'first_name', value: 'Test' },
-  { label: /Apellidos */i, name: 'last_name', value: 'User' },
-  { testId: 'password', name: 'password', value: 'testpassword' },
-  { testId: 'confirm', name: 'confirm_password', value: 'testpassword' },
+  { label: 'Usuario', name: 'username', value: 'testuser' },
+  { label: 'Email', name: 'email', value: 'testuser@example.com' },
+  { label: 'Nombre', name: 'first_name', value: 'Test' },
+  { label: 'Apellidos', name: 'last_name', value: 'User' },
+  { label: 'Contraseña', name: 'password', value: 'testpassword', testId: 'password' },
+  { label: 'Confirmar contraseña', name: 'confirm_password', value: 'testpassword', testId: 'confirm_password' },
 ];
+
 describe('RegisterForm', () => {
   it('envía los datos y realiza login tras el registro', async () => {
     authService.register.mockResolvedValueOnce({})
@@ -41,7 +49,7 @@ describe('RegisterForm', () => {
       if (field.testId) {
         fireEvent.change(screen.getByTestId(field.testId), { target: { value: field.value } });
       } else {
-        fireEvent.change(screen.getByLabelText(field.label), { target: { value: field.value } });
+        fireEvent.change(screen.getByLabelText(new RegExp(field.label, 'i')), { target: { value: field.value } });
       }
     }
 
@@ -60,8 +68,8 @@ describe('RegisterForm', () => {
     })
   })
 
-  requiredFields.forEach(({ label, testId, name }) => {
-    it(`muestra un error si falta el campo requerido "${name}"`, async () => {
+  requiredFields.forEach((field) => {
+    it(`muestra un error si falta el campo requerido "${field.name}"`, async () => {
       render(
         <BrowserRouter>
           <RegisterForm />
@@ -69,12 +77,12 @@ describe('RegisterForm', () => {
       );
 
       // Rellenamos todos los campos menos el que estamos probando
-      for (const field of requiredFields) {
-        if (field.name === name) continue;
-        if (field.testId) {
-          fireEvent.change(screen.getByTestId(field.testId), { target: { value: field.value } });
+      for (const f of requiredFields) {
+        if (f.name === field.name) continue;
+        if (f.testId) {
+          fireEvent.change(screen.getByTestId(f.testId), { target: { value: f.value } });
         } else {
-          fireEvent.change(screen.getByLabelText(field.label), { target: { value: field.value } });
+          fireEvent.change(screen.getByLabelText(new RegExp(f.label, 'i')), { target: { value: f.value } });
         }
       }
 
@@ -83,7 +91,7 @@ describe('RegisterForm', () => {
       await waitFor(() => {
         expect(
           screen.getByText((content) =>
-            content.includes(`El campo ${name} es requerido`)
+            content.includes(`El campo "${field.label}" es obligatorio`)
           )
         ).toBeInTheDocument();
       });
