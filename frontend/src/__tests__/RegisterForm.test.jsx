@@ -4,6 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import RegisterForm from '../components/RegisterForm'
 import { authService } from '../services/auth'
+import { fields } from '../constants/fields';
 
 // Mock del servicio de registro y login
 vi.mock('../services/auth', () => ({
@@ -24,14 +25,18 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-const requiredFields = [
-  { label: 'Usuario', name: 'username', value: 'testuser' },
-  { label: 'Email', name: 'email', value: 'testuser@example.com' },
-  { label: 'Nombre', name: 'first_name', value: 'Test' },
-  { label: 'Apellidos', name: 'last_name', value: 'User' },
-  { label: 'Contraseña', name: 'password', value: 'testpassword', testId: 'password' },
-  { label: 'Confirmar contraseña', name: 'confirm_password', value: 'testpassword', testId: 'confirm_password' },
-];
+const validValues = {
+  username: 'testuser',
+  email: 'testuser@example.com',
+  first_name: 'Test',
+  last_name: 'User',
+  phone: '',
+  password: 'testpassword',
+  confirm_password: 'testpassword',
+  phone: '', // Campo opcional
+};
+
+const requiredFields = fields.filter(f => f.required);
 
 describe('RegisterForm', () => {
   it('envía los datos y realiza login tras el registro', async () => {
@@ -45,25 +50,24 @@ describe('RegisterForm', () => {
     )
 
     // Rellenamos el formulario usando el array
-    for (const field of requiredFields) {
+    for (const field of fields) {
       if (field.testId) {
-        fireEvent.change(screen.getByTestId(field.testId), { target: { value: field.value } });
+        fireEvent.change(screen.getByTestId(field.testId), { target: { value: validValues[field.name] } });
       } else {
-        fireEvent.change(screen.getByLabelText(new RegExp(field.label, 'i')), { target: { value: field.value } });
+        fireEvent.change(screen.getByLabelText(new RegExp(field.label, 'i')), { target: { value: validValues[field.name] } });
       }
     }
 
     fireEvent.click(screen.getByRole('button', { name: /registrarse/i }))
 
+    const expectedRegisterData = Object.fromEntries(
+      fields
+          .filter(f => f.name !== 'confirm_password')
+          .map(f => [f.name, validValues[f.name]])
+    );
+
     await waitFor(() => {
-      expect(authService.register).toHaveBeenCalledWith({
-        username: 'testuser',
-        email: 'testuser@example.com',
-        first_name: 'Test',
-        last_name: 'User',
-        phone: '',
-        password: 'testpassword',
-      })
+      expect(authService.register).toHaveBeenCalledWith(expectedRegisterData);
       expect(authService.login).toHaveBeenCalledWith('testuser', 'testpassword')
     })
   })
@@ -77,12 +81,12 @@ describe('RegisterForm', () => {
       );
 
       // Rellenamos todos los campos menos el que estamos probando
-      for (const f of requiredFields) {
+      for (const f of fields) {
         if (f.name === field.name) continue;
         if (f.testId) {
-          fireEvent.change(screen.getByTestId(f.testId), { target: { value: f.value } });
+          fireEvent.change(screen.getByTestId(f.testId), { target: { value: validValues[f.name] } });
         } else {
-          fireEvent.change(screen.getByLabelText(new RegExp(f.label, 'i')), { target: { value: f.value } });
+          fireEvent.change(screen.getByLabelText(new RegExp(f.label, 'i')), { target: { value: validValues[f.name] } });
         }
       }
 

@@ -4,16 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth'; // Asegúrate de tener un servicio de registro
 import { getUser } from '../services/api'; // Asegúrate de que la ruta sea correcta
 import { useUser } from '../context/UserContext'; // Asegúrate de que la ruta sea correcta
+import { fields} from '../constants/fields'; // Asegúrate de que la ruta sea correcta
 
-const fields = [
-  { name: 'username', label: 'Usuario', type: 'text', required: true },
-  { name: 'email', label: 'Email', type: 'email', required: true },
-  { name: 'first_name', label: 'Nombre', type: 'text', required: true },
-  { name: 'last_name', label: 'Apellidos', type: 'text', required: true },
-  { name: 'phone', label: 'Teléfono', type: 'text', required: false },
-  { name: 'password', label: 'Contraseña', type: 'password', required: true },
-  { name: 'confirm_password', label: 'Confirmar contraseña', type: 'password', required: true },
-];
 const requiredFields = fields.filter(f => f.required).map(f => f.name);
 
 

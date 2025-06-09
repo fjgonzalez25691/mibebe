@@ -1,5 +1,5 @@
 import reactlogo from '../assets/react.svg'
-import viteLogo from '../../public/vite.svg'
+import vitelogo from '../assets/vite.svg'
 import djangoLogo from '../assets/django-logo-negative.svg'
 import django_rest_logo from '../assets/django_rest.svg'
 
@@ -8,7 +8,7 @@ function HomePage() {
     <main className="flex-1 flex items-center justify-center flex-col">
       <div className="flex items-center justify-between mb-4 gap-11">
         <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="h-24" alt="Vite logo" />
+          <img src={vitelogo} className="h-24" alt="Vite logo" />
         </a>
         <a href="https://reactjs.org" target="_blank">
           <img src={reactlogo} className="h-24" alt="React logo" />
